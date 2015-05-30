@@ -92,7 +92,7 @@ def find_all_recipes(directories):
     for directory in directories:
         for root, dirs, files in os.walk(os.path.expanduser(directory)):
             if set(files).intersection(possible_metas):
-                yield MetaData(os.path.join(root))
+                yield MetaData(os.path.abspath(root))
 
 
 def build_missing_metas(metas):
