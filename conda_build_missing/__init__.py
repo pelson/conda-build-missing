@@ -24,11 +24,13 @@ def sort_dependency_order(metas):
     meta_named_deps = {}
     buildable = [meta.name() for meta in metas]
     for meta in metas:
-        all_deps = (meta.get_value('requirements/run', []) +
-                    meta.get_value('requirements/build', []))
+        all_deps = (tuple(meta.get_value('requirements/run', ())) +
+                    tuple(meta.get_value('requirements/build', ())))
         # Remove version information from the name.
         all_deps = [dep.split(' ', 1)[0] for dep in all_deps]
-        meta_named_deps[meta.name()] = [dep for dep in all_deps if dep in buildable]
+        buildable_deps = [dep for dep in all_deps if dep in buildable]
+        meta_named_deps.setdefault(meta.name(), []).extend(buildable_deps)
+
     sorted_names = list(resolve_dependencies(meta_named_deps))
     return sorted(metas, key=lambda meta: sorted_names.index(meta.name()))
 
@@ -90,7 +92,7 @@ def build(meta, test=True):
 def find_all_recipes(directories):
     possible_metas = set(['meta.yml', 'meta.yaml'])
     for directory in directories:
-        for root, dirs, files in os.walk(os.path.expanduser(directory)):
+        for root, dirs, files in os.walk(os.path.expanduser(directory), followlinks=True):
             if set(files).intersection(possible_metas):
                 yield MetaData(os.path.abspath(root))
 

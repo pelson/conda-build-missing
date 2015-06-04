@@ -3,7 +3,7 @@ import os
 from distutils.core import setup
 
 setup(name='conda_build_missing',
-      version='1.0',
+      version='1.1',
       author='Phil Elson',
       author_email='pelson.pub@gmail.com',
       packages=['conda_build_missing'],
